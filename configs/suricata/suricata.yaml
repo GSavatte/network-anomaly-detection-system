@@ -1,0 +1,65 @@
+%YAML 1.1
+---
+
+# suricata.yaml
+vars:
+  address-groups:
+    HOME_NET: "[192.168.56.0/24,172.16.0.0/12,192.168.1.0/24,10.0.0.0/8]"
+    EXTERNAL_NET: "!$HOME_NET"
+    HTTP_SERVERS: "$HOME_NET"
+    SSH_SERVERS: "$HOME_NET"
+  port-groups:
+    HTTP_PORTS: "80,8080"
+    SSH_PORTS: "22"
+
+outputs:
+  - eve-log:
+      enabled: yes
+      filetype: regular
+      filename: eve.json
+      types:
+        - alert:
+            metadata: yes
+            tagged-packets: yes
+        - http:
+            extended: yes
+        - tls:
+            extended: yes
+        - dns:
+            query: yes
+            answer: yes
+
+  - fast:
+      enabled: yes
+      filename: fast.log
+
+detect:
+  profile: medium
+
+threading:
+  set-cpu-affinity: no
+
+stream:
+  memcap: 256mb
+  checksum-validation: no
+  reassembly:
+    memcap: 256mb
+    depth: 1mb
+
+app-layer:
+  protocols:
+    http:
+      enabled: yes
+    tls:
+      enabled: yes
+    dns:
+      tcp:
+        enabled: yes
+      udp:
+        enabled: yes
+    ssh:
+      enabled: yes
+
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - local.rules
