@@ -15,3 +15,13 @@ services:
       - ./configs/suricata/rules:/var/lib/suricata/rules
       - ./logs:/var/log/suricata
     command: -i enp0s8 -v
+
+  web_target:
+    image: php:8.2-apache
+    container_name: web_target
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www/html
+      - ./logs/apache:/var/log/apache2
