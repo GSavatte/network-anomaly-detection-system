@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   suricata:
     image: jasonish/suricata:latest
@@ -25,3 +23,19 @@ services:
     volumes:
       - ./html:/var/www/html
       - ./logs/apache:/var/log/apache2
+    networks:
+      - siem-net
+
+  syslog-ng:
+    image: balabit/syslog-ng:latest
+    container_name: siem_syslog_ng
+    volumes:
+      - ./configs/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - ./logs:/var/log/suricata:ro
+      - ./logs/apache:/var/log/apache2:ro
+    networks:
+      - siem-net
+
+networks:
+  siem-net:
+    driver: bridge
