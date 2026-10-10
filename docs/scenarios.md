@@ -23,7 +23,7 @@ Ce scénario simule une tentative d'injection de paramètres dans les requêtes 
 
 ### 2. Vecteur d'attaque
 ```bash
-curl "[http://192.168.56.101/index.php?exploit=1](http://192.168.56.101/index.php?exploit=1)"
+curl "http://192.168.56.101/index.php?exploit=1"
 ```
 
 ### 3. Règle Suricata
@@ -32,10 +32,10 @@ alert http any any -> any 80 (msg:"WEB-MISC PHP exploit attempt"; flow:to_server
 ```
 - `flow:to_server,established` : Analyse uniquement le trafic à destination du serveur sur une connexion TCP établie (évite les faux positifs provenant de paquets non liés à une session HTTP).
 - `http.uri` & `content:"exploit=1"` : Inspecte spécifiquement l'URL de la requête HTTP à la recherche de la chaîne exacte.
-- `classtype:attempted-admin` & `priority:1` : Catégorise l'attaque comme une tentative d'élévation de privilèges à sévérité critique.
+- `classtype:attempted-admin` & `priority:3` : Catégorise l'attaque comme une tentative d'élévation de privilèges à sévérité basse.
 
 ### 4. Extrait d'alerte générée et notification administrateur
-<i>Les alertes présentées présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
+<i>Les alertes présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
 ```json
 {
   "timestamp": "2026-10-09T05:27:51.830346+0000",
@@ -45,23 +45,23 @@ alert http any any -> any 80 (msg:"WEB-MISC PHP exploit attempt"; flow:to_server
     "signature_id": 1000001,
     "signature": "WEB-MISC PHP exploit attempt",
     "category": "Attempted Administrator Privilege Gain",
-    "severity": 1
+    "severity": 3
   },
   "http": {
     "url": "/index.php?exploit=1"
   }
 }
 ```
-- Gravité : **Faible**. Il s'agit d'un bruit de fond ou d'une tentative de test. Aucune action immédiate requise si le serveur ne retourne pas d'erreur 500 ou de contenu sensible. Surveiller si l'IP source réitère des requêtes plus agressives.
+- Gravité : **Basse**. Il s'agit d'un bruit de fond ou d'une tentative de test. Aucune action immédiate requise si le serveur ne retourne pas d'erreur 500 ou de contenu sensible. Surveiller si l'IP source réitère des requêtes plus agressives.
 
 ## Scénario 2 : Traversée de répertoire
 
 ### 1. Description de la menace
-L'attaque par traversée de répertoire consiste à manipuler les variables pointant vers des fichiers avec des séquences `../.` L'objectif est de forcer l'application à lire des fichiers système confidentiels (`/etc/passwd`, fichiers de configuration, clés API) situés en dehors de la racine web (`/var/www/html`).
+L'attaque par traversée de répertoire consiste à manipuler les variables pointant vers des fichiers avec des séquences `../`. L'objectif est de forcer l'application à lire des fichiers système confidentiels (`/etc/passwd`, fichiers de configuration, clés API) situés en dehors de la racine web (`/var/www/html`).
 
 ### 2. Vecteur d'attaque
 ```bash
-curl "[http://192.168.56.101/index.php?file=../../../../etc/passwd](http://192.168.56.101/index.php?file=../../../../etc/passwd)"
+curl "http://192.168.56.101/index.php?file=../../../../etc/passwd"
 ```
 
 ### 3. Règle Suricata
@@ -72,7 +72,7 @@ alert http any any -> any 80 (msg:"WEB-ATTACK Path Traversal attempt"; flow:to_s
 - `classtype:web-application-attack` & `priority:2` : Catégorise l'attaque comme une tentative d'attaque sur une application web à sévérité moyenne.
 
 ### 4. Extrait d'alerte générée et notification administrateur
-<i>Les alertes présentées présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
+<i>Les alertes présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
 ```json
 {
   "timestamp": "2026-10-09T05:44:12.601650+0000",
@@ -85,7 +85,7 @@ alert http any any -> any 80 (msg:"WEB-ATTACK Path Traversal attempt"; flow:to_s
     "severity": 2
   },
   "http": {
-    "url": "/index.php?file=../../../../etc/passwd",
+    "url": "/index.php?file=../../../../etc/passwd"
   }
 }
 ```
@@ -98,7 +98,7 @@ La RCE est l'une des vulnérabilités les plus critiques. L'attaquant injecte de
 
 ### 2. Vecteur d'attaque
 ```bash
-curl "[http://192.168.56.101/index.php?cmd=whoami](http://192.168.56.101/index.php?cmd=whoami)"
+curl "curl "http://192.168.56.101/index.php?cmd=whoami"
 ```
 
 ### 3. Règle Suricata
@@ -109,7 +109,7 @@ alert http any any -> any 80 (msg:"WEB-ATTACK Remote Command Execution attempt";
 - `classtype:web-application-attack` & `priority:1` : Catégorise l'attaque comme une tentative d'attaque sur une application web à sévérité élevée.
 
 ### 4. Extrait d'alerte générée et notification administrateur
-<i>Les alertes présentées présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
+<i>Les alertes présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
 ```json
 {
   "timestamp": "2026-10-09T05:49:00.317998+0000",
@@ -134,20 +134,20 @@ alert http any any -> any 80 (msg:"WEB-ATTACK Remote Command Execution attempt";
 Ce scénario simule un déni de service (DoS) par envoi massif de requêtes HTTP à une application web. L'objectif est de saturer les ressources du serveur et de le rendre indisponible pour les utilisateurs légitimes.
 
 ### 2. Vecteur d'attaque
-<i>Génération de 50 requêtes HTTP consécutives sans délai :</i>
-```ps
-1..50 | ForEach-Object { Invoke-WebRequest -Uri "[http://192.168.56.101/index.php](http://192.168.56.101/index.php)" -UseBasicParsing }
+<i>Génération de 50 requêtes HTTP consécutives sans délai (seuil de détection : 20 en 5 secondes) :</i>
+```bash
+for i in $(seq 1 50); do curl -s -o /dev/null "http://192.168.56.101/index.php"; done
 ```
 
 ### 3. Règle Suricata
 ```yaml
-alert http any any -> any 80 (msg:"DOS High Rate HTTP Requests Detected"; flow:to_server,established; detection_filter:track by_src, count 20, seconds 5; classtype:denial-of-service; priority:1; sid:1000005; rev:2;)
+alert http any any -> any 80 (msg:"DOS High Rate HTTP Requests Detected"; flow:to_server,established; detection_filter:track by_src, count 20, seconds 5; classtype:denial-of-service; priority:1; sid:1000004; rev:2;)
 ```
 - `detection_filter:track by_src, count 20, seconds 5` : Détecte les sources envoyant plus de 20 requêtes HTTP en 5 secondes.
 - `classtype:denial-of-service` & `priority:1` : Catégorise l'attaque comme un déni de service à sévérité élevée.
 
 ### 4. Extrait d'alerte générée et notification administrateur
-<i>Les alertes présentées présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
+<i>Les alertes présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
 ```json
 {
   "timestamp": "2026-10-09T05:53:08.205482+0000",
@@ -169,9 +169,13 @@ alert http any any -> any 80 (msg:"DOS High Rate HTTP Requests Detected"; flow:t
 Ce scénario simule une attaque par force brute sur un formulaire d'authentification web. L'attaquant tente de deviner le mot de passe en envoyant un grand nombre de requêtes POST avec différentes combinaisons de mots de passe.
 
 ### 2. Vecteur d'attaque
-<i>Génération de 50 requêtes HTTP consécutives sans délai :</i>
-```ps
-1..15 | ForEach-Object { Invoke-WebRequest -Uri "http://192.168.56.101/login.php" -Method POST -Body @{username="admin"; password="password$_"} -UseBasicParsing }
+<i>Génération de 15 requêtes POST consécutives sans délai (seuil de détection : 10 en 5 secondes) :</i>
+```bash
+for i in $(seq 1 15); do
+  curl -s -o /dev/null "http://192.168.56.101/login.php" \
+    --data-urlencode "username=admin" \
+    --data-urlencode "password=password$i"
+done
 ```
 
 ### 3. Règle Suricata
@@ -181,7 +185,7 @@ alert http any any -> any 80 (msg:"WEB-ATTACK HTTP Password Brute Force Attempt"
 - `classtype:web-application-attack` & `priority:2` : Catégorise l'attaque comme une attaque sur une application web à sévérité moyenne.
 
 ### 4. Extrait d'alerte générée et notification administrateur
-<i>Les alertes présentées présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
+<i>Les alertes présentées dans cette documentation ont été tronquées pour ne montrer que les champs pertinents pour ce travail</i>
 ```json
 {
   "timestamp": "2026-10-09T06:31:03.125367+0000",
