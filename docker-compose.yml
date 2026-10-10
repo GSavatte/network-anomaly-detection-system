@@ -23,6 +23,25 @@ services:
     volumes:
       - ./html:/var/www/html
       - ./logs/apache:/var/log/apache2
+    networks:
+      - siem-net
+
+  syslog-ng:
+    image: balabit/syslog-ng:latest
+    container_name: siem_syslog_ng
+    restart: unless-stopped
+    depends_on:
+      es01:
+        condition: service_healthy
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    volumes:
+      - ./configs/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
+      - ./logs:/var/log/suricata:ro
+      - ./logs/apache:/var/log/apache2:ro
+    networks:
+      - siem-net
+      - default
 
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
@@ -60,7 +79,6 @@ services:
       timeout: 5s
       retries: 30
 
-
   kibana:
     image: docker.elastic.co/kibana/kibana:8.15.0
     restart: unless-stopped
@@ -76,3 +94,7 @@ services:
 
 volumes:
   esdata:
+
+networks:
+  siem-net:
+    driver: bridge

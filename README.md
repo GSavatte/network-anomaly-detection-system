@@ -8,7 +8,9 @@ Ce projet met en œuvre une infrastructure de sécurité et de surveillance de r
 
 Le réseau s'appuie sur une interface **Host-Only** (`192.168.56.0/24`) isolée pour simuler un environnement de production.
 
-**Schéma d'architecture à integrer**
+Nous proposons le scéma d'architecture pour illustrer les flux de données et la corrélation entre les différents composants :
+
+![Diagramme d'architecture](<./docs/ressources/diagramme.png>)
 
 ### Flux de données et corrélation :
 
@@ -42,7 +44,28 @@ Le réseau s'appuie sur une interface **Host-Only** (`192.168.56.0/24`) isolée 
 - Accès à Internet pour télécharger les images officielles.
 - Interface réseau Host-Only configurée (192.168.56.0/24).
 
+### Configurer une VM Linux :
+
+1. Ouvrir Oracl VirtualBox et créer une nouvelle machine virtuelle.
+2. Importer l'image Ubuntu Server 26.04.1 (64 bits) et allouer au moins 4 à 8 Go de RAM.
+3. Configurer une première interface réseau en mode "NAT" pour l'accès à Internet et une seconde interface en mode "Host-Only" pour la communication avec les conteneurs Docker.
+![Une premiere interface en mode "NAT"](./docs/ressources/interface01.png)
+![Une seconde interface en mode "Host-Only"](./docs/ressources/interface02.png)
+4. Installer Docker et Docker Compose sur la VM Ubuntu.
+```bash
+sudo apt update
+sudo apt install docker.io docker-compose -y
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+5. Augmenter la mémore virtuelle maximale pour ElastiSearch
+```bash
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee -a /etc/sysctl.conf
+```
+
 ### Lancement de l'infrastructure
+<i>Tous les outils sont packagés dans des conteneurs Docker pour simplifier le déploiement et l'isolation. Il n'est donc pas nécessaire d'installer manuellement chaque composant sur l'hôte.</i>
 
 1. Cloner le dépôt et lancer les conteneurs :
 
