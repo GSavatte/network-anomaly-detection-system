@@ -12,7 +12,7 @@ services:
       - ./configs/suricata/suricata.yaml:/etc/suricata/suricata.yaml
       - ./configs/suricata/rules:/var/lib/suricata/rules
       - ./logs:/var/log/suricata
-    command: -i enp0s8 -v
+    command: ["-i", "${SURICATA_INTERFACE:?Définir SURICATA_INTERFACE dans .env}","-v"]
 
   web_target:
     image: php:8.2-apache
