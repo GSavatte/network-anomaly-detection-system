@@ -29,12 +29,19 @@ services:
   syslog-ng:
     image: balabit/syslog-ng:latest
     container_name: siem_syslog_ng
+    restart: unless-stopped
+    depends_on:
+      es01:
+        condition: service_healthy
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
     volumes:
       - ./configs/syslog-ng/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro
       - ./logs:/var/log/suricata:ro
       - ./logs/apache:/var/log/apache2:ro
     networks:
       - siem-net
+      - default
 
 networks:
   siem-net:
