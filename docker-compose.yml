@@ -43,6 +43,58 @@ services:
       - siem-net
       - default
 
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    depends_on:
+      es01:
+        condition: service_healthy
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD:?Définis KIBANA_PASSWORD dans le fichier .env}
+    command:
+      - bash
+      - -c
+      - |
+        curl -sf -X POST -u "elastic:$$ELASTIC_PASSWORD" \
+          -H "Content-Type: application/json" \
+          http://es01:9200/_security/user/kibana_system/_password \
+          -d "{\"password\":\"$$KIBANA_PASSWORD\"}"
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:?Définis ELASTIC_PASSWORD dans le fichier .env}
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "127.0.0.1:9200:9200"   # accessible uniquement depuis la VM
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:$$ELASTIC_PASSWORD http://localhost:9200 | grep -q cluster_name"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.0
+    restart: unless-stopped
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+    ports:
+      - "5601:5601"
+
+volumes:
+  esdata:
+
 networks:
   siem-net:
     driver: bridge
