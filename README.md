@@ -8,7 +8,9 @@ Ce projet met en œuvre une infrastructure de sécurité et de surveillance de r
 
 Le réseau s'appuie sur une interface **Host-Only** (`192.168.56.0/24`) isolée pour simuler un environnement de production.
 
-**Schéma d'architecture à integrer**
+Nous proposons le scéma d'architecture pour illustrer les flux de données et la corrélation entre les différents composants :
+
+![Diagramme d'architecture](<./docs/ressources/diagramme.png>)
 
 ### Flux de données et corrélation :
 
