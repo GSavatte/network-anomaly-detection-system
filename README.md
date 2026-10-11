@@ -114,6 +114,8 @@ Variables du fichier `.env` :
 | `ELASTIC_PASSWORD` | Mot de passe de l'utilisateur `elastic` (connexion à Kibana, utilisé par syslog-ng) |
 | `KIBANA_PASSWORD` | Mot de passe de l'utilisateur interne `kibana_system` (utilisé par Kibana) |
 | `SURICATA_INTERFACE` | Interface écoutée par Suricata (celle relevée précédement à l'étape 6, ex. `enp0s8`) |
+| `DISCORD_RELY_PASSWORD` | Mot de passe qui sera utilisé par Le webhook pour accéder aux logs dans Elastic |
+| `DISCORD-WEBHOOK_URL` | URL du webhook discord vers où envoyer les messages d'alerte |
 
 ```bash
 docker-compose up -d
@@ -126,6 +128,24 @@ docker-compose ps
 ```
 
 Le premier démarrage télécharge les images et dure quelques minutes. Elasticsearch doit passer en `healthy`, puis Kibana démarre (dépendement de la machine mais entre 1 et 3 minutes). Les services `setup` (définition du mot de passe `kibana_system`) et `kibana-import` (import du dashboard) sont éphémères : ils doivent apparaître en `Exited (0)`.
+
+3. Connexion à Kibana :
+
+Dans un navigateur se rendre à l'adresse de la machine hôte sur le port 5601 (http://localhost:5601 par exemple). Pour se connecter, saisir l'identifiant "elastic" et le mot de passe défini dans le fichier .env par ELASTIC_PASSWORD.
+
+4. Préparation des alertes et du webhook discord
+
+  a. Instanciation de l'index des messages
+
+  Dans l'application web kibana, se rendre dans le menu déroulant latéral et chercher "Dev Tools" dans le sous menu "Management". Dans le champs gauche de la console de la page Dev Tools, coller le contenu du fichier    "index-setup.txt". Executer chacune des requêtes PUT (déplacer le curseur dans une requête et cliquer sur le bouton ⏯️).
+
+  b. Importation des alertes
+
+  Dans le menu déroulant latéral, cliquer sur le sous menu "Management", puis dans le sous menu latéral secondaire, se rendre à "Saved Object". Importer le fichier "kibana-configuration.ndjson" grâce au bouton prévu à   cet effet (en haut à droite).
+
+Pour verifier que les importations ont réussies, verifier l'existance de l'index "kibana-alerts" dans "Index Management". Pour les alertes, constater la présence de "discord-alert" dans "Connectors" et des 5 alertes dans "Rules".
+
+---
 
 ## 4. Scénarios d'Attaques & Détections IDS
 
@@ -174,7 +194,7 @@ Le dashboard est versionné dans `configs/kibana/dashboard.ndjson`. La procédur
 
 ## 7. Alertes et notifications
 
-TODO
+Des règles vont se déclancher lors de l'ajout en base de logs d'alerte et ajouter une instance lui correspondant dans l'index "kibana-alerts". En parrallèle, le conteneur discord-relay viendra les récupérer pour les transmettre par message dans le serveur discord associé.
 
 ---
 
@@ -212,6 +232,7 @@ Au-delà des exigences minimales, le projet fournit un dashboard personnalisé i
 - **Enrichir la détection** : charger un jeu de règles communautaire et ajouter une détection d'anomalies statistique par rapport à une base de comportement "normal".
 - **Normaliser les logs** : adopter un schéma commun pour que `source.ip`, `url.original` ou `http.response.status_code` portent le même nom dans les deux index, et définir des *index templates* explicites (champs de type `ip`, `keyword`, `date`).
 - **Renforcer la stack en elle-même** : TLS entre les composants, utilisateur dédié à syslog-ng limité à l'écriture dans `suricata-*` et `apache-*`, gestion des secrets plus robuste que le fichier `.env`.
+- **Acquérir une licence Elastic** : Cela permettrait de profiter de plus de fonctionnalités, et de mettre en place un système d'alertes plus poussés voire intelligent.
 - **Gérer le cycle de vie des données** : politique de redondance, sauvegardes.
 - **Enrichir la visualisation** : géolocalisation des IP source (GeoIP), liens directs du dashboard vers le détail d'une alerte.
 - **Compléter la collecte** : ajouter Wazuh pour superviser aussi les hôtes, pas seulement le réseau.
