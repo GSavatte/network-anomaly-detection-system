@@ -2,6 +2,8 @@
 
 Ce projet met en œuvre une infrastructure de sécurité et de surveillance de réseau conteneurisée avec **Docker Compose**. Elle combine un moteur de détection d'intrusions (**Suricata**), un collecteur et centralisateur de logs (**syslog-ng**) et une pile d'analyse et de visualisation (**Elasticsearch & Kibana**), afin de surveiller un serveur web applicatif, de détecter cinq types d'intrusions et d'en alerter l'administrateur.
 
+**Vidéo de démonstration** : [https://youtu.be/vP8XztnJsVw?si=V3Aw-6EXAPxn38Y7](https://youtu.be/vP8XztnJsVw?si=V3Aw-6EXAPxn38Y7)
+
 **Sommaire**
 
 1. [Architecture générale](#1-architecture-générale)
