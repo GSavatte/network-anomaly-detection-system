@@ -115,7 +115,7 @@ Variables du fichier `.env` :
 | `KIBANA_PASSWORD` | Mot de passe de l'utilisateur interne `kibana_system` (utilisé par Kibana) |
 | `SURICATA_INTERFACE` | Interface écoutée par Suricata (celle relevée précédement à l'étape 6, ex. `enp0s8`) |
 | `DISCORD_RELY_PASSWORD` | Mot de passe qui sera utilisé par Le webhook pour accéder aux logs dans Elastic |
-| `DISCORD-WEBHOOK_URL` | URL du webhook discord vers où envoyer les messages d'alerte |
+| `DISCORD_WEBHOOK_URL` | URL du webhook discord vers où envoyer les messages d'alerte |
 
 ```bash
 docker-compose up -d
