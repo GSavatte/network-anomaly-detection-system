@@ -127,7 +127,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-Le premier démarrage télécharge les images et dure quelques minutes. Elasticsearch doit passer en `healthy`, puis Kibana démarre (dépendement de la machine mais entre 1 et 3 minutes). Les services `setup` (définition du mot de passe `kibana_system`) et `kibana-import` (import du dashboard) sont éphémères : ils doivent apparaître en `Exited (0)`.
+Le premier démarrage télécharge les images et dure quelques minutes. Elasticsearch doit passer en `healthy`, puis Kibana démarre (dépendement de la machine mais entre 1 et 3 minutes). Le service `setup` (définition du mot de passe `kibana_system`) est éphémère : il doit apparaître en `Exited (0)`.
 
 3. Connexion à Kibana :
 
