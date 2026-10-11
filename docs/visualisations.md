@@ -6,12 +6,12 @@ Ce document détaille l'import, la conception, l'architecture des données et la
 
 ## 1. Dashboard
 
-Le dashboard est versionné dans le dépôt ([Récupérer le fichier](../ressources/dashboard.ndjson)). Il n'est pas nécessaire de le reconstruire à la main : il est possible d'importer ce fichier dans Kibana.
+Le dashboard est versionné dans le dépôt ([Récupérer le fichier](../configs/kibana/dashboard.ndjson)). Il n'est pas nécessaire de le reconstruire à la main : il est possible d'importer ce fichier dans Kibana.
 
 ### 1.2 Import du Dashboard dans Kibana
 
 1. Dans le menu burger à gauche dans Kibana : *Stack Management*, *Saved Objects*, *Import*.
-2. Sélectionner [le fichier ndjson](../ressources/dashboard.ndjson).
+2. Sélectionner [le fichier ndjson](../configs/kibana/dashboard.ndjson).
 3. Laisser l'option d'écrasement des conflits activée, puis *Import*.
 4. Ouvrir *Dashboard*, puis `overview`.
 
