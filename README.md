@@ -137,11 +137,11 @@ Dans un navigateur se rendre à l'adresse de la machine hôte sur le port 5601 (
 
   a. Instanciation de l'index des messages
 
-  Dans l'application web kibana, se rendre dans le menu déroulant latéral et chercher "Dev Tools" dans le sous menu "Management". Dans le champs gauche de la console de la page Dev Tools, coller le contenu du fichier    "index-setup.txt". Executer chacune des requêtes PUT (déplacer le curseur dans une requête et cliquer sur le bouton ⏯️).
+  Dans l'application web kibana, se rendre dans le menu déroulant latéral et chercher "Dev Tools" dans le sous menu "Management". Dans le champs gauche de la console de la page Dev Tools, coller le contenu du fichier    "./configs/kibana/index-setup.txt". Executer chacune des requêtes PUT (déplacer le curseur dans une requête et cliquer sur le bouton ⏯️).
 
   b. Importation des alertes
 
-  Dans le menu déroulant latéral, cliquer sur le sous menu "Management", puis dans le sous menu latéral secondaire, se rendre à "Saved Object". Importer le fichier "kibana-configuration.ndjson" grâce au bouton prévu à   cet effet (en haut à droite).
+  Dans le menu déroulant latéral, cliquer sur le sous menu "Management", puis dans le sous menu latéral secondaire, se rendre à "Saved Object". Importer le fichier "./configs/kibana/kibana-configuration.ndjson" grâce au bouton prévu à   cet effet (en haut à droite).
 
 Pour verifier que les importations ont réussies, verifier l'existance de l'index "kibana-alerts" dans "Index Management". Pour les alertes, constater la présence de "discord-alert" dans "Connectors" et des 5 alertes dans "Rules".
 
@@ -196,8 +196,6 @@ Le dashboard est versionné dans `configs/kibana/dashboard.ndjson`. La procédur
 
 Les alertes sont déclanchées par des "rules" Kibana, qui lors de la détection de logs contenant les signatures d'alerte ajoute un log à l'index "kibana-alerts".
 Un script python sert de relai entre elastic et discord. Ce script est encapsulé dans le conteneur "discord-relay" et se connecte à elastic en http pour y récupérer les alertes stockées dans l'index "kibana-alertes". Une fois récupérés, ces alertes sont retransmises par message avec un webhook discord.
-
-Cette fonctionnalités est partiellement fonctionnelle, tous les types d'alertes ne sont pas remontés. Le disfonctoinnement vient très certainement des rules, les instances d'alertes n'arrivant pas toutes dans l'index Kibana-alertes.
 
 Cette fonctionnalité aurais pu être plus efficace en utilisant l'action webhook mise à disposition par Kibana, ce qui aurait pu nous faire gagner beacoupe de temps. Malheureusement cette option est verrouillée derrière une licence payante.
 
