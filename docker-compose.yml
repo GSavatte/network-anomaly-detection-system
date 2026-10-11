@@ -93,8 +93,28 @@ services:
     ports:
       - "5601:5601"
 
+  discord-relay:
+    build: ./discord-relay
+    restart: unless-stopped
+    depends_on:
+      es01:
+        condition: service_healthy
+    environment:
+      - ES_URL=http://es01:9200
+      - ES_USER=discord_alert_reader
+      - ES_PASSWORD=${DISCORD_RELAY_PASSWORD:?Définis DISCORD_RELAY_PASSWORD dans .env}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:?Définis DISCORD_WEBHOOK_URL dans .env}
+
+      - ALERT_INDEX=kibana-alerts
+      - POLL_SECONDS=5
+    volumes:
+      - relay-state:/state
+    networks:
+      - default
+
 volumes:
   esdata:
+  relay-state:
 
 networks:
   siem-net:
