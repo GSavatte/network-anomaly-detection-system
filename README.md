@@ -29,7 +29,7 @@ Nous proposons le scéma d'architecture pour illustrer les flux de données et l
 │   ├── suricata/               # Configuration et règles IDS local.rules
 │   ├── syslog-ng/              # Fichiers de pipelines de collecte
 ├── html/                       # Code applicatif cible (index.php)
-├── scenarios/                  # Scripts d'automatisation des attaques
+├── ressources/                  # Scripts d'automatisation des attaques
 │   └── run_all_attacks.sh      # Script d'exécution des 5 scénarios
 ├── docs/                       # Documentation détaillée du projet
 │   ├── scenarios.md            # Fiches techniques des 5 attaques et règles IDS
@@ -83,10 +83,10 @@ docker-compose ps
 
 3. Exécuter les scénarios d'attaques automatisés :
 
-Récupérer le script `run_all_attacks.sh` dans le répertoire `scenarios/` et l'exécuter pour simuler les 5 scénarios d'attaques documentés.
+Récupérer le script `run_all_attacks.sh` dans le répertoire `ressources/` et l'exécuter pour simuler les 5 scénarios d'attaques documentés.
 
 ```bash
-bash scenarios/run_all_attacks.sh
+bash ressources/run_all_attacks.sh
 ```
 
 ## 4. Scénarios d'Attaques & Détections IDS
