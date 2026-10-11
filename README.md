@@ -194,7 +194,13 @@ Le dashboard est versionné dans `configs/kibana/dashboard.ndjson`. La procédur
 
 ## 7. Alertes et notifications
 
-Des règles vont se déclancher lors de l'ajout en base de logs d'alerte et ajouter une instance lui correspondant dans l'index "kibana-alerts". En parrallèle, le conteneur discord-relay viendra les récupérer pour les transmettre par message dans le serveur discord associé.
+Les alertes sont déclanchées par des "rules" Kibana, qui lors de la détection de logs contenant les signatures d'alerte ajoute un log à l'index "kibana-alerts".
+Un script python sert de relai entre elastic et discord. Ce script est encapsulé dans le conteneur "discord-relay" et se connecte à elastic en http pour y récupérer les alertes stockées dans l'index "kibana-alertes". Une fois récupérés, ces alertes sont retransmises par message avec un webhook discord.
+
+Cette fonctionnalités est partiellement fonctionnelle, tous les types d'alertes ne sont pas remontés. Le disfonctoinnement vient très certainement des rules, les instances d'alertes n'arrivant pas toutes dans l'index Kibana-alertes.
+
+Cette fonctionnalité aurais pu être plus efficace en utilisant l'action webhook mise à disposition par Kibana, ce qui aurait pu nous faire gagner beacoupe de temps. Malheureusement cette option est verrouillée derrière une licence payante.
+
 
 ---
 
