@@ -1,0 +1,28 @@
+PUT /_security/role/discord_alert_reader
+{
+  "indices":[
+    {
+      "names":["kibana-alerts"],
+      "privileges":["read", "view_index_metadata"]
+    }
+  ]
+}
+
+PUT /_security/user/discord_alert_reader
+{
+  "password": "ChangeMe_Discord123",
+  "roles": ["discord_alert_reader"]
+}
+
+PUT /kibana-alerts
+{
+  "mappings": {
+    "properties": {
+      "@timestamp": { "type": "date" },
+      "rule_id": { "type": "keyword" },
+      "rule_name": { "type": "keyword" },
+      "alert_id": { "type": "keyword" },
+      "message": { "type": "text" }
+    }
+  }
+}

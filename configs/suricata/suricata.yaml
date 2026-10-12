@@ -21,13 +21,6 @@ outputs:
         - alert:
             metadata: yes
             tagged-packets: yes
-        - http:
-            extended: yes
-        - tls:
-            extended: yes
-        - dns:
-            query: yes
-            answer: yes
 
   - fast:
       enabled: yes
